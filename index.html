@@ -2,100 +2,153 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <!-- Permite que la página se adapte a distintos tamaños de pantalla -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Juego Número Magico</title>
+    <!-- Archivo CSS externo para estilos -->
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <div class = "contenedor">
-    <h1>Juego Número Magico</h1>
-    <p>Intenta adivinar el número mágico entre 1 y 100.</p>
-    <input type = number id = "numero" min = "0" max ="100">
-    <button onclick="jugar()">Intentar</button>
 
-    <div id = "mensaje"></div>
-    <div id = "intentosRestantes">Intentos restantes: 10</div>
+<body>
+    <!-- Contenedor principal del juego -->
+    <div class="contenedor">
+        <h1>Juego Número Magico</h1>
+        <p>Intenta adivinar el número mágico entre 1 y 100.</p>
+
+        <!-- Campo donde el usuario escribe su número -->
+        <input type="number" id="numero" min="0" max="100">
+
+        <!-- Botón que ejecuta la función jugar() -->
+        <button onclick="jugar()">Intentar</button>
+
+        <!-- Aquí se muestran los mensajes del juego -->
+        <div id="mensaje"></div>
+
+        <!-- Muestra cuántos intentos quedan -->
+        <div id="intentosRestantes">Intentos restantes: 10</div>
     </div>
 
-    <div class ="historial-contenedor">
+    <!-- Sección donde se muestra el historial de intentos -->
+    <div class="historial-contenedor">
         <h3>Historial de intentos</h3>
         <ul id="historial"></ul>
     </div>
 
-
-
-
     <script>
+
+    // Número de intentos disponibles
     let intentosRestantes = 10;
+
+    // Se genera un número aleatorio entre 1 y 100
     let numeroMagico = Math.floor(Math.random() * 100) + 1;
+
+    // Arreglo para guardar el historial de intentos
     let historial = [];
 
+    // Función que verifica si el número ingresado es correcto
     function verificar(numeroUsuario) {
+
+        // Si ya no hay intentos, termina el juego
         if (intentosRestantes <= 0) {
-            document.getElementById("mensaje").textContent = "¡Has perdido! El número mágico era: " + numeroMagico;
+            document.getElementById("mensaje").textContent =
+                "¡Has perdido! El número mágico era: " + numeroMagico;
             return;
         }
+
+        // Se resta un intento
         intentosRestantes--;
 
+        // Calcula la diferencia entre el número ingresado y el número mágico
         const diferencia = Math.abs(numeroUsuario - numeroMagico);
-        let pista ="";
-        if(numeroUsuario === numeroMagico){
+
+        let pista = "";
+
+        // Se determina si está correcto o qué tan cerca está
+        if (numeroUsuario === numeroMagico) {
             pista = "¡Correcto!";
-        }else if (diferencia <= 5) {
+        } else if (diferencia <= 5) {
             pista = "Caliente";
         } else if (diferencia <= 10) {
             pista = "Tibio";
         } else {
             pista = "Frío";
         }
+
+        // Se guarda el intento en el historial
         historial.push({ numero: numeroUsuario, pista: pista });
+
+        // Se actualiza visualmente el historial
         actualizarHistorial(numeroUsuario, pista, diferencia);
 
+        // Mensajes que guían al jugador
         if (numeroUsuario == numeroMagico) {
-            document.getElementById("mensaje").textContent = "¡Ganaste! El número mágico era: " + numeroMagico;
+            document.getElementById("mensaje").textContent =
+                "¡Ganaste! El número mágico era: " + numeroMagico;
+
+            // Agrega clase para animación o estilo especial al ganar
             document.getElementById("mensaje").classList.add("mensaje-ganar");
+
         } else if (numeroUsuario < numeroMagico) {
-            document.getElementById("mensaje").textContent = "El número mágico es mayor. Intentos restantes: " + intentosRestantes;
+            document.getElementById("mensaje").textContent =
+                "El número mágico es mayor. Intentos restantes: " + intentosRestantes;
         } else {
-            document.getElementById("mensaje").textContent = "El número mágico es menor. Intentos restantes: " + intentosRestantes;
+            document.getElementById("mensaje").textContent =
+                "El número mágico es menor. Intentos restantes: " + intentosRestantes;
         }
-        if (intentosRestantes ===0 && numeroUsuario != numeroMagico) {
-            document.getElementById("mensaje").textContent = "¡Has perdido! El número mágico era: " + numeroMagico;
+
+        // Si se acaban los intentos y no acertó
+        if (intentosRestantes === 0 && numeroUsuario != numeroMagico) {
+            document.getElementById("mensaje").textContent =
+                "¡Has perdido! El número mágico era: " + numeroMagico;
         }
-            document.getElementById("intentosRestantes").textContent = "Intentos restantes: " + intentosRestantes;
+
+        // Actualiza el contador visual de intentos
+        document.getElementById("intentosRestantes").textContent =
+            "Intentos restantes: " + intentosRestantes;
     }
 
+    // Función que toma el valor del input y lo envía a verificar()
     function jugar() {
         const input = document.getElementById("numero");
         const valor = Number(input.value);
+
         verificar(valor);
+
+        // Limpia el input después de intentar
         input.value = "";
     }
 
+    // Función que agrega cada intento al historial con barra de proximidad
     function actualizarHistorial(numeroUsuario, pista, diferencia) {
+
         const lista = document.getElementById("historial");
+
         const item = document.createElement("li");
         item.style.marginBottom = "10px";
 
+        // Texto que muestra número y pista
         const texto = document.createElement("div");
         texto.textContent = numeroUsuario + " - " + pista;
 
+        // Contenedor de la barra visual
         const barraContainer = document.createElement("div");
         barraContainer.style.width = "250px";
         barraContainer.style.height = "15px";
         barraContainer.style.backgroundColor = "#ddd";
         barraContainer.style.borderRadius = "10px";
         barraContainer.style.overflow = "hidden";
+
         const barra = document.createElement("div");
-        
         barra.style.height = "100%";
+
+        // Se convierte la diferencia en porcentaje visual
         let porcentaje = 100 - (diferencia / 100) * 100;
         if (porcentaje < 0) porcentaje = 0;
 
         barra.style.width = porcentaje + "%";
         barra.style.transition = "width 0.4s ease";
 
-
+        // Color según cercanía
         if (diferencia <= 5) {
             barra.style.backgroundColor = "red";
         } else if (diferencia <= 10) {
@@ -105,12 +158,12 @@
         }
 
         barraContainer.appendChild(barra);
-
         item.appendChild(texto);
         item.appendChild(barraContainer);
 
         lista.appendChild(item);
     }
+
     </script>
 
 </body>
